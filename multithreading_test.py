@@ -80,6 +80,6 @@ def action(data):
 
 #modelop.metrics
 def metrics(data):
-	return {
+	yield {
 		"f1": .9, "AUC": .8
 	}
