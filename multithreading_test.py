@@ -1,5 +1,5 @@
-#fastscore.schema.0: input_schema
-#fastscore.schema.1: output_schema
+#fastscore.schema.0: input_schema.avsc
+#fastscore.schema.1: output_schema.avsc
 
 import threading
 import time
