@@ -61,7 +61,7 @@ def begin():
 
 	pass
 
-#modelop.action
+#modelop.score
 def action(data):
 
 	global df_global, lock
