@@ -1,3 +1,6 @@
+#fastscore.slot.0: in-use
+#fastscore.slot.1: in-use
+
 import threading
 import time
 import pickle
@@ -40,7 +43,7 @@ def thread_function():
 		print('\nAdded file ' + infile)
 		time.sleep(1)
 
-	
+#modelop.init	
 def begin():
 
 	global df_global, lock
@@ -58,7 +61,7 @@ def begin():
 
 	pass
 
-
+#modelop.action
 def action(data):
 
 	global df_global, lock
@@ -74,3 +77,9 @@ def action(data):
 
 	print(output)
 	yield output
+
+#modelop.metrics
+def metrics(data):
+	return {
+		"f1": .9, "AUC": .8
+	}
