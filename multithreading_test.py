@@ -1,5 +1,5 @@
-#fastscore.slot.0: in-use
-#fastscore.slot.1: in-use
+#fastscore.schema.0: input_schema
+#fastscore.schema.1: output_schema
 
 import threading
 import time
