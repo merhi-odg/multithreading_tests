@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "output_schema",
+  "fields": [
+    {
+      "name": "Last_file_added",
+      "type": "string"
+    },
+    {
+      "name": "Sum_of_column_B",
+      "type": "double"
+    }
+  ]
+}
