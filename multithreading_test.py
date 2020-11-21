@@ -34,14 +34,14 @@ def thread_function():
 		df_global = pd.concat(
 			[df_global, df_incremental]
 		).reset_index(drop=True, inplace=False)
-
-		time.sleep(5)
+		
+		time.sleep(0.1)
 
 		# Release the lock after DF update
 		lock.release()
 
 		print('\nAdded file ' + infile)
-		time.sleep(1)
+		time.sleep(10)
 
 #modelop.init	
 def begin():
