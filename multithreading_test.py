@@ -99,8 +99,8 @@ def action(data):
 	lock.acquire()
 
 	output = {
-		'Last file added': max(df_global.A),
-		'Sum of column B': df_global.B.sum()
+		'Last_file_added': max(df_global.A),
+		'Sum_of_column_B': df_global.B.sum()
 	}
 
 	# Release the lock once done with DF
