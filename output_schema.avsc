@@ -7,7 +7,7 @@
       "type": "string"
     },
     {
-      "name": "Sum_of_column_B",
+      "name": "Max_of_column_B",
       "type": "double"
     }
   ]
