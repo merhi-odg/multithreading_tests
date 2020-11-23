@@ -24,7 +24,7 @@ def thread_function():
 
 		# read file
 		try:
-			infile = sorted(glob.glob('df_incremental*.pkl'))[0]
+			infile = sorted(glob.glob('df_incremental_*.pkl'))[0]
 		# If file not found
 		except IndexError:
 			infile = ''
