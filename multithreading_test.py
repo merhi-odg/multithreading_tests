@@ -1,5 +1,5 @@
-#fastscore.schema.0: input_schema.avsc
-#fastscore.schema.1: output_schema.avsc
+# fastscore.schema.0: input_schema.avsc
+# fastscore.schema.1: output_schema.avsc
 
 import threading
 import time
@@ -14,9 +14,10 @@ def thread_function():
 	Defines a thread to open a file, read its content, delete file,
 	append content to pre-defined global DataFrame. Appending to the global DF
 	is done in a locked thread for safety. File opening is done on a schedule.
-
 	:return: augmented global DataFrame
 	"""
+
+	# add a print to indicate when a new file is found and read
 
 	while True:
 		global df_global
@@ -25,40 +26,44 @@ def thread_function():
 		# read file
 		try:
 			infile = sorted(glob.glob('df_incremental_*.pkl'))[0]
+
 		# If file not found
-		except IndexError:
-			infile = ''
+		except IndexError as index_err:
+			print("File note found: ", index_err)
 			file_not_found = True
 
 		if file_not_found:
 			# Nothing to append to global DF
 			df_incremental = pd.DataFrame()
+            
 		else:
 			# If file found, load its contents (DataFrame), then remove it
 			df_incremental = pickle.load(open(infile, 'rb'))
 			os.remove(infile)
 
+			print("\nfile found: " + infile)
+
 		# Set the lock before updating DF
 		lock.acquire()
 
 		# get small pandas dataframe to add to global one
-		df_global = pd.concat(
-			[df_global, df_incremental]
-		).reset_index(drop=True, inplace=False)
+		try:
+			df_global = pd.concat(
+				[df_global, df_incremental]
+			).reset_index(drop=True, inplace=False)
 
-		# add some extra time to the locked thread for safetu
-		time.sleep(0.1)
+		except Exception as thread_err:
+			print("Try clause in thread function failed: ", thread_err)
 
-		# Release the lock after DF update
-		lock.release()
+		finally:
+			# Release the lock after DF update
+			lock.release()
 
-		print('\nAdded file ' + infile)
-
-		# Set the period of file opening
-		time.sleep(15)
+		# Set the period of file opening (some divisor of 5 min)
+		time.sleep(2)
 
 
-#modelop.init
+# modelop.init
 def begin():
 	"""
 	A function to define global variable
@@ -70,22 +75,24 @@ def begin():
 	# Initialize global DataFrame from file
 	df_global = pickle.load(open('df_global.pkl', 'rb'))
 
+	# Initialize a threading lock (before starting thread below)
+	lock = threading.Lock()
+
 	# Set and start the thread
 	timer_thread = threading.Thread(
 		target=thread_function,
 		# args=(1, ),
-		daemon=True
+		daemon=True  # as soon as main thread completes, this thread is taken down
 	)
-	timer_thread.start()
 
-	# Initialize a threading lock
-	lock = threading.Lock()
+	# Try setting daemon=False and see how engine behaves
+	timer_thread.start()
 
 	pass
 
 
-#modelop.score
-def action(data):
+# modelop.score
+def action(data: int):
 	"""
 	A function to score an input
 	:param data: Irrelevant (unused) in this case
@@ -97,21 +104,30 @@ def action(data):
 	# Set thread locking in case DF is being accessed here while
 	# simultaneously being updated by thread_function
 	lock.acquire()
+    
+	try:
+		output = {
+			'Last_file_added': df_global.filename.iloc[-1],
+			'Max_of_column_B': max(df_global.file_number)
+		}
 
-	output = {
-		'Last_file_added': max(df_global.A),
-		'Sum_of_column_B': df_global.B.sum()
-	}
+	except:
+		print("Try clause in action failed!")
+		output = {
+			'Last_file_added': "ERROR",
+			'Max_of_column_B': None
+		}
 
-	# Release the lock once done with DF
-	lock.release()
+	finally:
+		# Release the lock once done with DF
+		lock.release()
 
 	print(output)
-	# return output
-	yield output
+	return output
+	# yield output
 
 
-#modelop.metrics
+# modelop.metrics
 def metrics(data):
 	"""
 	A function to return some metrics on input data
@@ -119,6 +135,4 @@ def metrics(data):
 	:return: fixed dictionary
 	"""
 
-	yield {
-		"f1": 0.9, "AUC": 0.8
-	}
+	yield {"f1": 0.9, "AUC": 0.8}
