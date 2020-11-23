@@ -123,8 +123,8 @@ def action(data: int):
 		lock.release()
 
 	print(output)
-	return output
-	# yield output
+	# return output
+	yield output
 
 
 # modelop.metrics
