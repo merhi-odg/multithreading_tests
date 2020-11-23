@@ -92,7 +92,7 @@ def begin():
 
 
 # modelop.score
-def action(data: int):
+def action(data):
 	"""
 	A function to score an input
 	:param data: Irrelevant (unused) in this case
